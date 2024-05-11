@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "prod-logger"
+version = "1.0.0"
+description = "Python logger class for logging in production."
+authors = ["Dr. Nobel Khandaker <nobel@outlook.com>"]
+readme = "README.md"
+packages = [{ include = "prod_logger", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "^1.34.103"
+uuid = "^1.30"
+pytest = "^8.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
