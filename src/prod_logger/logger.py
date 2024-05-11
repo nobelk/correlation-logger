@@ -1,16 +1,16 @@
 """
-This module contains class to create a Logger
+This module contains class to create the Prod Logger instance
 """
 import logging
+from pathlib import Path
 import sys
 from enum import Flag, auto
-
-from src.prod_logger.cloudwatch_handler import CloudWatchHandler
 
 
 class LogSink(Flag):
     """Define the output of the log"""
     CONSOLE = auto()
+    LOCAL_FILE = auto()
     CLOUDWATCH = auto()
 
 
@@ -19,28 +19,35 @@ class Logger:
 
     def __init__(self,
                  name: str,
-                 log_sink: LogSink = LogSink.CONSOLE,
+                 sink: LogSink = LogSink.CONSOLE,
                  log_level: int = logging.ERROR,
-                 cloudwatch_handler: CloudWatchHandler = None):
+                 handler: logging.Handler = None,
+                 log_file_name: str = None):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(log_level)
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)-4s %(name)s : %(message)-2s"
         )
 
-        if log_sink in LogSink.CONSOLE:
-            # create console handler with a higher log level
+        if sink in LogSink.CONSOLE:
+            # create console handler
             ch = logging.StreamHandler(stream=sys.stdout)
             ch.setLevel(log_level)
             ch.setFormatter(formatter)
             self.logger.addHandler(ch)
 
-        if log_sink in LogSink.CLOUDWATCH:
-            # cloudwatch handler is required if log is sent to cloudwatch
-            assert cloudwatch_handler is not None
-            fh = cloudwatch_handler
+        if sink in LogSink.LOCAL_FILE:
+            # create file handler
+            fh = logging.FileHandler(filename=Path(log_file_name))
             fh.setFormatter(formatter)
             self.logger.addHandler(fh)
+
+        if sink in LogSink.CLOUDWATCH:
+            # cloudwatch handler is required if log is sent to cloudwatch
+            assert handler is not None
+            cwh = handler
+            cwh.setFormatter(formatter)
+            self.logger.addHandler(cwh)
 
     @property
     def name(self):
