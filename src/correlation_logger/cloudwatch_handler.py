@@ -52,23 +52,16 @@ class CloudWatchHandler(logging.Handler):
 
     def __init__(
             self,
-            level,
-            region_name,
-            aws_access_key_id,
-            aws_secret_access_key,
+            client,
             log_group_name,
             log_stream_name,
     ):
-        super().__init__(level)
-        region = AWSConfig(region_name)
+        super().__init__()
         self.log_group_name = log_group_name
         self.log_stream_name = log_stream_name
-        self.client = boto3.client(
-            service_name="logs",
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-            config=region,
-        )
+        self.client = client
+        self.client.create_log_group(logGroupName=self.log_group_name)
+        self.client.create_log_stream(logGroupName=self.log_group_name, logStreamName=self.log_stream_name)
 
     def emit(self, record):
         """
@@ -96,5 +89,5 @@ class CloudWatchHandler(logging.Handler):
         self.client.put_log_events(
             logGroupName=self.log_group_name,
             logStreamName=self.log_stream_name,
-            logEvents=[{"timestamp": timestamp, "message": message}],
+            logEvents=[{"timestamp": timestamp, "message": message}]
         )

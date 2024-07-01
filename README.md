@@ -1,7 +1,9 @@
-# Prod logger
+# Correlation logger
 
 Production-ready logging library for Python.
 The aim here is to be able to use correlation ids for generating actionable production logs.
+By including the correlation id within the method signature, it helps a team to standardize the correlation id based 
+logging in the production code.
 With the presence of correlation ids, it is possible to track events and errors across the service and application
 boundaries.
 
@@ -18,10 +20,14 @@ The logs are published in two types of configurable log sinks:
 1) Console
 2) AWS cloudwatch logs It supports correlation ids or salt to perform detail tracing of the events.
 
-# To build project
+# To activate virtual environment
+`poetry shell`
 
-poetry build
+# To build project
+`poetry build`
 
 # To test project
+`poetry run pytest -v`
 
-poetry run pytest
+# Pypi project installation
+`pip install correlation-logger`
